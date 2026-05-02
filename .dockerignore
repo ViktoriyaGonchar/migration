@@ -1,0 +1,31 @@
+# VCS и IDE
+.git
+.gitignore
+.idea
+.vscode
+
+# Секреты и локальная БД
+.env
+.env.*
+!.env.example
+*.db
+*.db-*
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.coverage
+htmlcov
+*.egg-info
+.eggs
+dist
+build
+
+# Прочий мусор
+*.log
+.DS_Store
+Thumbs.db

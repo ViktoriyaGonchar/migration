@@ -1,0 +1,19 @@
+# Образ Telegram-бота: только пакет bot (+ app для setuptools), без Alembic и статики сайта.
+FROM python:3.11-slim-bookworm
+
+WORKDIR /app
+
+RUN useradd --create-home --uid 1000 app
+
+COPY pyproject.toml README.md ./
+COPY app ./app
+COPY bot ./bot
+
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir .
+
+RUN chown -R app:app /app
+
+USER app
+
+CMD ["mc-bot"]

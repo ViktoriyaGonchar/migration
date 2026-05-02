@@ -1,0 +1,48 @@
+{% extends "sqladmin/layout.html" %}
+{% block content %}
+<div class="col-12">
+  <p class="text-muted">Только при PAYMENTS_SANDBOX_MODE и PAYMENTS_MOCK_UI. Доступ не выдаётся.</p>
+  {% if error_message %}
+  <div class="alert alert-danger" role="alert">{{ error_message }}</div>
+  {% endif %}
+  {% if result_success %}
+  <div class="alert alert-success" role="alert">{{ result_success }}</div>
+  {% endif %}
+
+  <div class="table-responsive">
+    <table class="table table-sm table-striped">
+      <thead>
+        <tr>
+          <th>id</th>
+          <th>provider</th>
+          <th>provider_payment_id</th>
+          <th>status</th>
+          <th>telegram_user_id</th>
+          <th>mock</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+        <tr>
+          <td>{{ row.id }}</td>
+          <td>{{ row.provider }}</td>
+          <td><code>{{ row.provider_payment_id }}</code></td>
+          <td>{{ row.status }}</td>
+          <td>{{ row.telegram_user_id }}</td>
+          <td>
+            <form method="post" class="d-inline">
+              <input type="hidden" name="attempt_id" value="{{ row.id }}" />
+              <button type="submit" name="action" value="mock_confirm" class="btn btn-sm btn-success">confirm</button>
+            </form>
+            <form method="post" class="d-inline">
+              <input type="hidden" name="attempt_id" value="{{ row.id }}" />
+              <button type="submit" name="action" value="mock_fail" class="btn btn-sm btn-outline-danger">fail</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

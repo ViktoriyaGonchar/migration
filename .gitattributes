@@ -1,0 +1,2 @@
+# Скрипты entrypoint для Linux-контейнеров — только LF (иначе shebang ломается на Windows).
+docker/*.sh text eol=lf

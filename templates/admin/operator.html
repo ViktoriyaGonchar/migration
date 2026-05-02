@@ -1,0 +1,154 @@
+{% extends "sqladmin/layout.html" %}
+{% block content %}
+<div class="col-12">
+  <p class="mb-3">
+    <a href="/admin/payment-requests" class="btn btn-outline-secondary btn-sm">Очередь заявок на оплату</a>
+  </p>
+  <details class="mb-3">
+    <summary class="fw-bold">Краткий чеклист</summary>
+    <ol class="mt-2 mb-0 small">
+      <li>Approve/Reject — только на странице <a href="/admin/payment-requests">Оплата: очередь</a>.</li>
+      <li>Выдача доступа (grant / reissue) — только здесь, отдельным действием.</li>
+      <li>Тестовые stub-платежи (Phase 7) не отображаются в этой таблице заявок.</li>
+    </ol>
+  </details>
+  {% if error_message %}
+  <div class="alert alert-danger" role="alert">{{ error_message }}</div>
+  {% endif %}
+  {% if result_success %}
+  <div class="alert alert-success" role="alert">{{ result_success }}</div>
+  {% endif %}
+  {% if result_login_url %}
+  <div class="alert alert-primary" role="alert">
+    <strong>Ссылка для входа (одноразовая):</strong><br />
+    <code class="user-select-all">{{ result_login_url }}</code>
+  </div>
+  {% endif %}
+  {% if result_telegram_deep_link %}
+  <div class="alert alert-primary" role="alert">
+    <strong>Ссылка привязки Telegram:</strong><br />
+    <code class="user-select-all">{{ result_telegram_deep_link }}</code>
+  </div>
+  {% endif %}
+
+  <div class="card mb-3">
+    <div class="card-header">
+      <h3 class="card-title">Загрузить подписчика</h3>
+    </div>
+    <div class="card-body">
+      <form method="post" action="">
+        <input type="hidden" name="action" value="load" />
+        <div class="mb-3">
+          <label class="form-label">ID подписчика</label>
+          <input type="number" name="subscriber_id" class="form-control" min="1"
+            value="{{ subscriber_id or '' }}" />
+        </div>
+        <button type="submit" class="btn btn-primary">Загрузить карточку</button>
+      </form>
+    </div>
+  </div>
+
+  {% if card %}
+  <div class="card mb-3">
+    <div class="card-header">
+      <h3 class="card-title">Статус</h3>
+    </div>
+    <div class="card-body">
+      <p><strong>Subscriber ID:</strong> {{ card.subscriber_id }}</p>
+      <p><strong>Подписка активна:</strong> {% if card.subscription_active %}да{% else %}нет{% endif %}</p>
+      <p><strong>Окончание подписки (UTC):</strong> {{ card.ends_at or '—' }}</p>
+      <p><strong>Telegram:</strong>
+        {% if card.telegram_user_id is not none %}{{ card.telegram_user_id }}{% else %}нет привязки{% endif %}
+      </p>
+    </div>
+  </div>
+
+  {% if manual_pending or manual_recent %}
+  <div class="card mb-3 border-secondary">
+    <div class="card-header">Ручные заявки на оплату (контекст)</div>
+    <div class="card-body">
+      {% if manual_pending %}
+      <p class="mb-2"><strong>Текущая pending:</strong>
+        <a href="/admin/payment-requests?id={{ manual_pending.id }}">#{{ manual_pending.id }}</a>
+        (создана UTC {{ as_utc(manual_pending.created_at).isoformat() }})
+      </p>
+      {% else %}
+      <p class="mb-2 text-muted">Нет активной pending заявки с привязкой к этому subscriber_id.</p>
+      {% endif %}
+      {% if manual_recent %}
+      <p class="mb-1"><strong>Последние заявки:</strong></p>
+      <ul class="mb-0 small">
+        {% for r in manual_recent %}
+        <li>
+          <a href="/admin/payment-requests?id={{ r.id }}">#{{ r.id }}</a>
+          — {{ r.status }} — {{ as_utc(r.created_at).isoformat() }}
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="card mb-3">
+    <div class="card-header">
+      <h3 class="card-title">Выдать или продлить доступ</h3>
+    </div>
+    <div class="card-body">
+      <form method="post" action="">
+        <input type="hidden" name="action" value="grant" />
+        <input type="hidden" name="subscriber_id" value="{{ card.subscriber_id }}" />
+        <div class="mb-3">
+          <label class="form-label">Дней</label>
+          <input type="number" name="days" class="form-control" min="1" value="{{ days_default }}" />
+        </div>
+        <button type="submit" class="btn btn-primary">Выдать доступ</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="card mb-3">
+    <div class="card-header">
+      <h3 class="card-title">Новая ссылка входа</h3>
+    </div>
+    <div class="card-body">
+      <form method="post" action="">
+        <input type="hidden" name="action" value="reissue" />
+        <input type="hidden" name="subscriber_id" value="{{ card.subscriber_id }}" />
+        <button type="submit" class="btn btn-primary">Новая ссылка входа</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="card mb-3">
+    <div class="card-header">
+      <h3 class="card-title">Ссылка привязки Telegram</h3>
+    </div>
+    <div class="card-body">
+      <form method="post" action="">
+        <input type="hidden" name="action" value="telegram_link" />
+        <input type="hidden" name="subscriber_id" value="{{ card.subscriber_id }}" />
+        <div class="mb-3">
+          <label class="form-label">Срок токена (часы)</label>
+          <input type="number" name="ttl_hours" class="form-control" min="1" value="{{ ttl_hours_default }}" />
+        </div>
+        <button type="submit" class="btn btn-primary">Создать ссылку привязки</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="card mb-3">
+    <div class="card-header">
+      <h3 class="card-title">Отвязать Telegram</h3>
+    </div>
+    <div class="card-body">
+      <form method="post" action="" onsubmit="return confirm('Снять привязку Telegram для этого подписчика?');">
+        <input type="hidden" name="action" value="unlink" />
+        <input type="hidden" name="subscriber_id" value="{{ card.subscriber_id }}" />
+        <button type="submit" class="btn btn-warning">Отвязать Telegram</button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
