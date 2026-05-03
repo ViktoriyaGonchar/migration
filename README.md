@@ -2,7 +2,7 @@
 
 Репозиторий объединяет статический лендинг (корень `SITE_ROOT`), **FastAPI** с async **SQLAlchemy** и **SQLite**, **SQLAdmin**, **Telegram-бота** (aiogram + httpx) и **Typer CLI**. Основной платёжный контур — **ручные заявки на оплату** (модерация в админке). Домен **payment_attempts** — заглушка провайдеров; не смешивать с ручным потоком.
 
-**Полные инструкции:** [TESTING.md](TESTING.md) · [DEPLOY.md](DEPLOY.md) · [ADMIN_RUNBOOK.md](ADMIN_RUNBOOK.md)
+**С нуля по шагам (новичку):** [START_HERE.md](START_HERE.md) — главный маршрут. Настройки: **`.env.example`** = минимум для первого запуска; **`.env.full.example`** = полный набор (prod, оплата, sandbox). **Полные инструкции:** [TESTING.md](TESTING.md) · [DEPLOY.md](DEPLOY.md) · [ADMIN_RUNBOOK.md](ADMIN_RUNBOOK.md)
 
 ## Ключевые контуры
 
@@ -17,7 +17,7 @@
 ## Быстрый локальный старт
 
 1. Python **≥ 3.11**, виртуальное окружение.
-2. Скопировать [`.env.example`](.env.example) в `.env`, заполнить минимум: `TOKEN_PEPPER`, `ADMIN_SESSION_SECRET`, при работе с ботом — `BOT_TOKEN`, `INTERNAL_API_KEY`, `INTERNAL_API_BASE_URL`, `BOT_USERNAME` (см. комментарии в `.env.example` и [`app/config.py`](app/config.py)).
+2. Скопировать [`.env.example`](.env.example) в `.env`: обязательно `TOKEN_PEPPER` и `ADMIN_SESSION_SECRET`; для бота добавьте `BOT_TOKEN` и `INTERNAL_API_KEY`. Расширенные переменные — [`.env.full.example`](.env.full.example).
 3. Установка пакета: `pip install -e .` (или эквивалент из вашего workflow).
 4. Миграции: `alembic upgrade head`.
 5. Первый админ (если ещё нет): `mc-cli create-admin --email ... --password ...`.
@@ -28,8 +28,9 @@
 
 ## Где настройки
 
-- Переменные окружения и `.env` — см. **`.env.example`** и загрузку в **`app/config.py`** (`Settings`).
-- Пути к БД и статике задаются через env (например `DATABASE_URL`, `SITE_ROOT`).
+- Минимум — **`.env.example`**; prod / оплата / sandbox — **`.env.full.example`**. Семантика в **`app/config.py`** и **`bot/config.py`**.
+- В Docker часть параметров задаётся в **`docker-compose.yml`**, а не в `.env` (см. [DEPLOY.md](DEPLOY.md)).
+- **Главный маршрут для новичка** — [START_HERE.md](START_HERE.md): там пошаговый запуск и раздел **«Где взять и как сгенерировать значения для `.env`»** (что такое `TOKEN_PEPPER`, `ADMIN_SESSION_SECRET`, `INTERNAL_API_KEY`, откуда `BOT_TOKEN` и `BOT_USERNAME`, команды генерации, что не коммитить в git).
 
 ## Статический лендинг
 

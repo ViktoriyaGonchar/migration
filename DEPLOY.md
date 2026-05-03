@@ -10,16 +10,16 @@
 
 - Python ≥ 3.11 на сервере или в образе.
 - Установка проекта: `pip install -e .` (сверить с `pyproject.toml`).
-- Файл окружения (не коммитить): переменные из **`.env.example`**, семантика в **`app/config.py`**.
+- Файл окружения (не коммитить): **`.env.example`** — минимум для первого запуска; **`.env.full.example`** — полный набор (prod, оплата, sandbox). Семантика в **`app/config.py`** и **`bot/config.py`**.
 
 ---
 
 ## Env / secrets
 
-- Минимум для работы сайта и админки: `DATABASE_URL`, `TOKEN_PEPPER`, `ADMIN_SESSION_SECRET`, `BASE_URL` (публичный URL без завершающего `/`), при HTTPS — `COOKIE_SECURE=true`.
-- Бот и internal: `INTERNAL_API_KEY`, `INTERNAL_API_BASE_URL`, `BOT_TOKEN`, `BOT_USERNAME`; платежи вручную — `PAYMENT_*`, `ADMIN_NOTIFY_TELEGRAM_IDS`.
-- Заглушки провайдеров: `PAYMENTS_STUBS_ENABLED`, `PAYMENTS_SANDBOX_MODE`, `PAYMENTS_MOCK_UI` — на production обычно выключены; включать только осознанно.
-- Phase 9: `STALE_PENDING_ALERT_HOURS` (1–168).
+- **Минимальный first run:** в `.env` достаточно `TOKEN_PEPPER`, `ADMIN_SESSION_SECRET`; для сервиса бота — ещё `BOT_TOKEN` и `INTERNAL_API_KEY` (см. `.env.example`).
+- **Docker Compose:** `DATABASE_URL` для `app` и `migrate`, а также `INTERNAL_API_BASE_URL` для `bot`, задаются в **`docker-compose.yml`** — в минимальном `.env` не дублируйте без нужды.
+- **Production / HTTPS:** `BASE_URL` (публичный URL без `/` в конце), `COOKIE_SECURE=true` — см. `.env.full.example`.
+- **Опционально:** `BOT_USERNAME` (deep link, `mc-cli issue-telegram-link`, Operator), ручная оплата `PAYMENT_*`, `ADMIN_NOTIFY_TELEGRAM_IDS`, заглушки `PAYMENTS_*`, `STALE_PENDING_ALERT_HOURS`, `YOOKASSA_*` — в `.env.full.example`.
 
 Секреты хранить в менеджере секретов или правах файла env, не в git.
 
@@ -145,7 +145,7 @@
 
 **Согласованность env:**
 
-- Один файл **`.env`** подключается к `app` и `bot`; **`INTERNAL_API_KEY`** должен совпадать. **`BASE_URL`** — публичный `https://…` (login-ссылки), при HTTPS **`COOKIE_SECURE=true`**. Значение **`INTERNAL_API_BASE_URL`** для бота в compose переопределено и не должно дрейфовать относительно имени сервиса `app`.
+- Один файл **`.env`** подключается к `app` и `bot`; **`INTERNAL_API_KEY`** должен совпадать. Для production добавьте **`BASE_URL`** и **`COOKIE_SECURE`** из `.env.full.example`. **`INTERNAL_API_BASE_URL`** для контейнера `bot` задаётся в compose (`http://app:8000`), не в минимальном `.env.example`.
 
 **Сборка образов:**
 
