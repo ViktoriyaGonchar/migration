@@ -1,0 +1,117 @@
+{% load static %}
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Помощь мигрантам: адаптация, документы и выбор страны | Migration Compass</title>
+    <meta
+      name="description"
+      content="SEO-лендинг Migration Compass: помощь в выборе страны для переезда, подготовке документов и адаптации семьи. Перейдите в приложение и оставьте заявку."
+    />
+    <link rel="canonical" href="https://example.org/" />
+    <meta property="og:title" content="Migration Compass — помощь при переезде и адаптации" />
+    <meta
+      property="og:description"
+      content="Пошаговая помощь мигрантам: оценка рисков, выбор страны, легализация и поддержка адаптации."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://example.org/" />
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+  </head>
+  <body>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="bg-glow bg-glow-3"></div>
+
+    <header class="header">
+      <div class="container">
+        <div class="brand">
+          <span class="brand-mark"></span>
+          <div>
+            <h1>Migration Compass</h1>
+            <p>SEO-страница о миграции, адаптации и выборе страны</p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container main">
+      <section class="tab-panel active">
+        <h1>Помощь мигрантам: как безопасно выбрать страну и пройти адаптацию</h1>
+        <p>
+          Migration Compass помогает мигрантам подготовить реалистичный план переезда,
+          выбрать подходящую страну и избежать типовых ошибок в документах и адаптации.
+        </p>
+      </section>
+
+      <section class="tab-panel active">
+        <h2>Что получает клиент Migration Compass</h2>
+        <div class="stats">
+          <article class="card stat-card">
+            <h3>Анализ ситуации и целей</h3>
+            <p>Разбираем семейный контекст, бюджет, сроки, документы и ограничения.</p>
+          </article>
+          <article class="card stat-card">
+            <h3>Сравнение стран для переезда</h3>
+            <p>Показываем 2-3 рабочих сценария с рисками, расходами и сроками.</p>
+          </article>
+          <article class="card stat-card">
+            <h3>План адаптации после переезда</h3>
+            <p>Даём пошаговые действия на первые недели и месяцы на новом месте.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="tab-panel active">
+        <h2>Почему важен профессиональный миграционный маршрут</h2>
+        <div class="card">
+          <p>
+            Неполные документы, неподходящее основание для въезда и неверная оценка
+            требований страны часто приводят к отказам и дополнительным расходам.
+            Мы собираем проверяемый маршрут и сопровождаем клиента на каждом этапе.
+          </p>
+        </div>
+      </section>
+
+      <section class="tab-panel active">
+        <h2>Частые запросы клиентов</h2>
+        <div class="resources-grid">
+          <article class="card">
+            <h3>Выбор страны для семьи</h3>
+            <p>Подбор направления с учетом школы, медицины, стоимости жизни и языка.</p>
+          </article>
+          <article class="card">
+            <h3>Подготовка документов</h3>
+            <p>Чек-листы, сроки, приоритеты и контроль рисков на каждом шаге.</p>
+          </article>
+          <article class="card">
+            <h3>Интеграция после переезда</h3>
+            <p>Работа, жилье, локальные сервисы, финансы и правовая безопасность.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="tab-panel active">
+        <h2>Перейти в основную продуктовую страницу</h2>
+        <div class="card">
+          <p>
+            Откройте полноценный интерфейс Migration Compass с вкладками, видео-гидом,
+            ресурсами и формой заявки.
+          </p>
+          <p>
+            <a href="{% url 'public:app' %}">Перейти в Migration Compass App</a>
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>© <span id="year"></span> Migration Compass. Все права защищены.</p>
+      </div>
+    </footer>
+
+    <script src="{% static 'js/main.js' %}"></script>
+  </body>
+</html>
