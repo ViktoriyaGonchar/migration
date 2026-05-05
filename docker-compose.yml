@@ -1,15 +1,13 @@
 # Канонический baseline: app + bot в одной Docker-сети, БД только у app.
 #
 # Файл .env в корне репозитория обязателен для compose (скопируйте из .env.example и заполните).
-# Минимальный .env.example не содержит DATABASE_URL и INTERNAL_API_BASE_URL: их для контейнеров
-# задаёт этот файл (см. environment у сервисов app, migrate и bot). Не дублируйте их в .env без нужды.
 #
 # ВАЖНО — reverse proxy (production):
 # - В WAN открывайте только reverse proxy (443/80). Пример: Caddy/Traefik/nginx на хосте или отдельном контейнере
 #   с upstream на app:8000 по внутренней сети (тот же bridge или attachable network).
 # - Сервис app НЕ публикует порт на хост (нет секции ports). Доступ снаружи только через proxy + TLS.
-# - Для production добавьте в .env (см. .env.full.example): BASE_URL=https://ваш-домен, COOKIE_SECURE=true;
-#   INTERNAL_API_KEY одинаковый для app и bot. INTERNAL_API_BASE_URL для сервиса bot задаётся ниже в compose.
+# - Выставьте в .env: BASE_URL=https://ваш-домен (без завершающего /), COOKIE_SECURE=true, одинаковый INTERNAL_API_KEY
+#   для app и bot (ключ задаётся в .env; bot дополнительно получает INTERNAL_API_BASE_URL ниже).
 #
 # Порядок первого запуска:
 # 1. Скопировать .env.example → .env, заполнить секреты.

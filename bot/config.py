@@ -14,13 +14,9 @@ _log = logging.getLogger(__name__)
 class BotSettings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
-    # Пустые значения допустимы в .env при запуске только app; перед polling проверяет bot/main.py.
-    bot_token: str = Field(default="", validation_alias="BOT_TOKEN")
-    internal_api_key: str = Field(default="", validation_alias="INTERNAL_API_KEY")
-    internal_api_base_url: str = Field(
-        default="http://127.0.0.1:8000",
-        validation_alias="INTERNAL_API_BASE_URL",
-    )
+    bot_token: str = Field(validation_alias="BOT_TOKEN")
+    internal_api_key: str = Field(validation_alias="INTERNAL_API_KEY")
+    internal_api_base_url: str = Field(validation_alias="INTERNAL_API_BASE_URL")
 
     # Phase 5: реквизиты и уведомления (только отображение в боте).
     payment_card_number: str = Field(default="", validation_alias="PAYMENT_CARD_NUMBER")
@@ -33,21 +29,6 @@ class BotSettings(BaseSettings):
     )
     # Phase 7: показ /pay_methods (stub-провайдеры); не трогает /pay.
     payments_stubs_enabled: bool = Field(default=False, validation_alias="PAYMENTS_STUBS_ENABLED")
-
-    @field_validator("bot_token", "internal_api_key", mode="before")
-    @classmethod
-    def strip_bot_secrets(cls, value: object) -> str:
-        if value is None:
-            return ""
-        return str(value).strip()
-
-    @field_validator("internal_api_base_url", mode="before")
-    @classmethod
-    def strip_base_url(cls, value: object) -> str:
-        if value is None:
-            return "http://127.0.0.1:8000"
-        s = str(value).strip().rstrip("/")
-        return s if s else "http://127.0.0.1:8000"
 
     @field_validator("admin_notify_telegram_ids", mode="before")
     @classmethod

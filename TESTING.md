@@ -9,14 +9,14 @@
 ## Prerequisites
 
 - Python ≥ 3.11, установленный проект (`pip install -e .` или как у вас принято).
-- Файл `.env` по образцу **`.env.example`** (минимум). Для полного контура (бот, оплата, prod, привязка Telegram) — дополнительно **`.env.full.example`**: `INTERNAL_API_KEY`, `BOT_TOKEN`, при сценариях deep link — `BOT_USERNAME`; для HTTPS — `BASE_URL`, `COOKIE_SECURE`.
+- Файл `.env` по образцу `.env.example`; для полного контура — непустые `INTERNAL_API_KEY`, `BOT_TOKEN`, `INTERNAL_API_BASE_URL`, `BOT_USERNAME` где требуется.
 - Доступ к браузеру (сайт + SQLAdmin) и Telegram (бот).
 
 ---
 
 ## Local setup
 
-1. Скопировать `.env.example` → `.env`, заполнить минимум; при необходимости строки из `.env.full.example` (сверить с `app/config.py` / `bot/config.py`).
+1. Скопировать `.env.example` → `.env`, заполнить секреты и URL (сверить с `app/config.py`).
 2. `alembic upgrade head`.
 3. При пустой БД: `mc-cli create-admin`, при необходимости `mc-cli create-subscriber`, `mc-cli create-subscription` или `grant-access` (см. сценарии ниже).
 4. Запуск backend: `uvicorn app.main:app --reload`.
@@ -32,7 +32,7 @@
 
 Конфигурация: [`docker-compose.yml`](docker-compose.yml), детали — [DEPLOY.md](DEPLOY.md).
 
-- **Prerequisite:** файл `.env` из минимального `.env.example` (для бота в compose — заданы `BOT_TOKEN` и `INTERNAL_API_KEY`); миграции: `docker compose --profile migrate run --rm migrate`. `DATABASE_URL` и `INTERNAL_API_BASE_URL` для контейнеров задаёт compose.
+- **Prerequisite:** файл `.env` из `.env.example`; для первого запуска — миграции: `docker compose --profile migrate run --rm migrate`.
 - **Steps:** `docker compose up -d app bot`; дождаться `healthy` у `app` (`docker compose ps`). С хоста **без** опубликованного порта app проверить только через proxy или `docker compose exec app python -c "import urllib.request; print(urllib.request.urlopen('http://127.0.0.1:8000/health').read())"`. Убедиться, что бот отвечает в Telegram и вызовы к API не дают 401/503 по internal ключу.
 - **Expected:** `/health` OK внутри контейнера `app`; бот стабильно работает с `INTERNAL_API_BASE_URL=http://app:8000`.
 - **If broken:** `INTERNAL_API_KEY` в `.env` пустой (internal отключён — 503); рассинхрон ключа между контейнерами; миграции не применялись; том `sqlite_data` не смонтирован.
@@ -61,7 +61,7 @@
 
 ### Bot start
 
-- **Prerequisite:** `BOT_TOKEN`, совпадающий с backend `INTERNAL_API_KEY`; локально URL API по умолчанию в `bot/config.py`, иначе задайте `INTERNAL_API_BASE_URL` (см. `.env.full.example`).
+- **Prerequisite:** `BOT_TOKEN`, `INTERNAL_API_BASE_URL`, совпадающий с backend `INTERNAL_API_KEY` (если дергается internal).
 - **Steps:** `mc-bot`.
 - **Expected:** бот онлайн, команды отвечают.
 - **If broken:** 401/503 на internal — ключ или base URL; сеть до backend.
@@ -126,7 +126,7 @@
 - **Prerequisite:** понимание: **`/pay_status`** — статус **ручной** заявки; **`/payment_status`** — контур **stub** (`payment_attempts`), только если заглушки включены.
 - **Steps:** с включённым `PAYMENTS_STUBS_ENABLED=true` проверить обе команды на тестовом пользователе с попыткой stub и с ручной заявкой.
 - **Expected:** ответы различаются по смыслу; нет смешивания статусов разных доменов.
-- **If broken:** stub выключен — `/payment_status` может быть недоступен или пуст; смотреть флаги в `.env.full.example` / `app/config.py`.
+- **If broken:** stub выключен — `/payment_status` может быть недоступен или пуст; смотреть флаги в `.env.example`.
 
 ### Internal API
 
