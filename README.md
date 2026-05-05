@@ -1,36 +1,45 @@
-# Migration Compass — backend, бот и закрытый сайт
+# Migration Compass Landing
 
-Репозиторий объединяет статический лендинг (корень `SITE_ROOT`), **FastAPI** с async **SQLAlchemy** и **SQLite**, **SQLAdmin**, **Telegram-бота** (aiogram + httpx) и **Typer CLI**. Основной платёжный контур — **ручные заявки на оплату** (модерация в админке). Домен **payment_attempts** — заглушка провайдеров; не смешивать с ручным потоком.
+Одностраничный сайт-визитка (HTML5 + vanilla CSS + vanilla JS), который помогает мигрантам:
+- адаптироваться в незнакомой стране;
+- выбрать новую страну, более подходящую для миграции;
+- найти проверенные контакты и полезные источники.
 
-**Полные инструкции:** [TESTING.md](TESTING.md) · [DEPLOY.md](DEPLOY.md) · [ADMIN_RUNBOOK.md](ADMIN_RUNBOOK.md)
+## Структура проекта
 
-## Ключевые контуры
+- `index.html` — разметка сайта (5 вкладок).
+- `assets/css/styles.css` — стили с неоновым градиентным оформлением.
+- `assets/js/main.js` — переключение вкладок и текущий год в футере.
+- `assets/videos/video-01 ... video-15` — папки для 15 видео.
 
-| Контур | Назначение |
-|--------|------------|
-| Публичный сайт | Статика + gated `/` после входа по ссылке с токеном |
-| SQLAdmin `/admin` | Очередь ручных заявок, approve/reject (**не** выдача доступа), операторские grant/reissue |
-| Бот | `/pay`, статус ручной заявки (`/pay_status`), при stub — отдельно `/payment_status`; уведомления админам |
-| Internal API `/api/internal/*` | Ключ `X-Internal-Key`; пустой ключ → ответы 503 на internal |
-| CLI `mc-cli` | Подписчики, подписки, login-ссылки, привязка Telegram, создание admin |
+## Как добавить 15 видео
 
-## Быстрый локальный старт
+1. Подготовьте MP4-файлы.
+2. В каждую папку `assets/videos/video-XX` (где `XX` от `01` до `15`) положите файл с именем:
+   - `video.mp4`
+3. Если хотите другое имя файла, поменяйте путь в `index.html` у соответствующего тега `<source src="...">`.
 
-1. Python **≥ 3.11**, виртуальное окружение.
-2. Скопировать [`.env.example`](.env.example) в `.env`, заполнить минимум: `TOKEN_PEPPER`, `ADMIN_SESSION_SECRET`, при работе с ботом — `BOT_TOKEN`, `INTERNAL_API_KEY`, `INTERNAL_API_BASE_URL`, `BOT_USERNAME` (см. комментарии в `.env.example` и [`app/config.py`](app/config.py)).
-3. Установка пакета: `pip install -e .` (или эквивалент из вашего workflow).
-4. Миграции: `alembic upgrade head`.
-5. Первый админ (если ещё нет): `mc-cli create-admin --email ... --password ...`.
-6. Backend: `uvicorn app.main:app --reload` (или без `--reload` в проде).
-7. Бот (отдельный процесс): `mc-bot`.
+Пример:
+- было: `assets/videos/video-01/video.mp4`
+- можно заменить на: `assets/videos/video-01/my-topic.mp4`
 
-Детали тестирования и деплоя — в файлах по ссылкам выше.
+## Настройка формы обратной связи через Formspree
 
-## Где настройки
+1. Создайте форму в Formspree и получите endpoint вида:
+   - `https://formspree.io/f/xxxxabcd`
+2. Откройте `index.html`.
+3. Найдите секцию формы (вкладка "Контакты") и замените в теге `<form>` атрибут `action`:
+   - было: `action="https://formspree.io/f/REPLACE_WITH_YOUR_FORM_ID"`
+   - станет: `action="https://formspree.io/f/xxxxabcd"`
 
-- Переменные окружения и `.env` — см. **`.env.example`** и загрузку в **`app/config.py`** (`Settings`).
-- Пути к БД и статике задаются через env (например `DATABASE_URL`, `SITE_ROOT`).
+## Где редактировать контент
 
-## Статический лендинг
+- Тексты вкладок: `index.html`
+- Ссылки на сайты: вкладка "Ресурсы" в `index.html`
+- Названия Telegram-ботов: вкладка "Ресурсы" в `index.html`
+- Названия/контакты WhatsApp-ботов: вкладка "Ресурсы" в `index.html`
+- Контактные данные: вкладка "Контакты" в `index.html`
 
-Исходники визитки — `index.html`, `assets/`. Отдача через приложение зависит от `SITE_ROOT` и маршрутов в `app/main.py`.
+## Запуск
+
+Откройте `index.html` в браузере.
